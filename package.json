@@ -1,0 +1,34 @@
+{
+    "name": "blowthemall",
+    "description": "A server to assist BlowThemAll clients",
+    "version": "0.0.1",
+    "homepage": "https://github.com/blowthemall/blowthemall-nodejs",
+    "license": "LGPL-3.0+",
+    "author": {
+        "name": "Vinícius dos Santos Oliveira",
+        "email": "vini.ipsmaker@gmail.com",
+        "url": "https://about.me/vinipsmaker"
+    },
+    "main": "src/index.js",
+    "scripts": {
+        "prestart": "npm install",
+        "start": "node src/index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/blowthemall/blowthemall-nodejs.git"
+    },
+    "bugs": {
+        "url": "https://github.com/blowthemall/blowthemall-nodejs/issues"
+    },
+    "config" : { "port" : "8080" },
+    "dependencies": {
+        "faye-websocket": "^0.9.3",
+        "jsonrpc-serializer": "^0.1.6",
+        "redis": "^0.12.1"
+    },
+    "engines": {
+        "node": "^0.12.0",
+        "npm": "^2.5.1"
+    }
+}
