@@ -24,6 +24,10 @@ function upgradeCallback(request, socket, head) {
 }
 
 function start(options) {
+    console.log('About to start redis client');
+    tracker.startRedisClient();
+    console.log('Redis client initialized');
+
     console.log('About to run server');
 
     var server = http.createServer(function(req, res) {
@@ -36,6 +40,7 @@ function start(options) {
     server.on('upgrade', upgradeCallback);
 }
 
+exports.startRedisClient = tracker.startRedisClient;
 exports.handleWebsocketChannel = handleWebsocketChannel;
 exports.upgradeCallback = upgradeCallback;
 exports.start = start;

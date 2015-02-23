@@ -1,8 +1,8 @@
 var jrs = require('jsonrpc-serializer');
-var redis = require('redis'),
-    client = redis.createClient();
+var redis = require('redis');
 var net = require('net');
 var utils = require('./utils.js');
+var client = null;
 
 var timeout = 120; // in seconds
 var roomsPerPage = 30;
@@ -13,6 +13,40 @@ var INTERNAL_ERROR = function() {
     ret.message = "Internal error";
     return ret;
 }();
+
+function roomsGarbageCollector() {
+    client.keys('serverroomslist:*', function(err, reply) {
+        if (err)
+            return;
+
+        reply.forEach(function(listkey) {
+            var gameId = listkey.substr(listkey.indexOf(':') + 1);
+            var onZrangebyscore = function(err, reply) {
+                if (err)
+                    return;
+
+                reply.forEach(function(host) {
+                    var hostkey = 'servernoderooms:' + host;
+                    client.srem(hostkey, gameId);
+                    client.zrem(listkey, host);
+                });
+            };
+
+            client.zrangebyscore(listkey, -Infinity,
+                                 new Date().getTime() - timeout * 1000,
+                                 onZrangebyscore);
+        });
+    });
+}
+
+exports.startRedisClient = function(newClient) {
+    if (newClient === undefined)
+        newClient = redis.createClient();
+
+    client = newClient;
+
+    setInterval(roomsGarbageCollector, timeout);
+};
 
 exports.publish = function(gameId, host, options, done) {
     var listkey = 'serverroomslist:' + gameId;
@@ -183,28 +217,3 @@ exports.verify = function(address, port, done) {
         exports.unpublish(hostid, done);
     });
 }
-
-setInterval(function() {
-    client.keys('serverroomslist:*', function(err, reply) {
-        if (err)
-            return;
-
-        reply.forEach(function(listkey) {
-            var gameId = listkey.substr(listkey.indexOf(':') + 1);
-            var onZrangebyscore = function(err, reply) {
-                if (err)
-                    return;
-
-                reply.forEach(function(host) {
-                    var hostkey = 'servernoderooms:' + host;
-                    client.srem(hostkey, gameId);
-                    client.zrem(listkey, host);
-                });
-            };
-
-            client.zrangebyscore(listkey, -Infinity,
-                                 new Date().getTime() - timeout * 1000,
-                                 onZrangebyscore);
-        });
-    });
-}, timeout);

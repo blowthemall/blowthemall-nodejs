@@ -81,6 +81,8 @@ var tracker = {
     }
 };
 
+exports.startRedisClient = backend.startRedisClient;
+
 exports.handleChannel = function(ws, client) {
     rpc.handleChannel(tracker, ws, client);
-}
+};
