@@ -24,7 +24,7 @@
     "config" : { "port" : "8080" },
     "dependencies": {
         "faye-websocket": "^0.9.3",
-        "jsonrpc-serializer": "^0.1.6",
+        "jsonrpc-serializer": "^0.1.8",
         "redis": "^0.12.1"
     },
     "engines": {
